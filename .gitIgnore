@@ -1,1 +1,5 @@
+# Environment variables
 .env
+
+# Events database
+events.db
