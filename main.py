@@ -29,7 +29,7 @@ cursor.execute('''CREATE TABLE IF NOT EXISTS  class_times
 intents = discord.Intents.all()
 client = commands.Bot(command_prefix='rose!', intents=intents)
 slash = SlashCommand(client, sync_commands=True)
-guild_ids = [685164560948527164]
+guild_ids = [685164560948527164, 696195534632910947]
 embed_color = 0xb00b0b
 
 # Functions
@@ -256,7 +256,7 @@ async def every_minute():
   for e in events:
     if (datetime.datetime.utcnow() + datetime.timedelta(hours=1, minutes=0)).strftime("%I:%M%p %Y-%m-%d") == e[3]:
       channel = client.get_channel(e[2])
-      embed = discord.Embed(title=f"{e[1]} Will Start in 1 Hour", description=e[4], color=embed_color)
+      embed = discord.Embed(title=f"{e[1]} 1 Hour Reminder", description=e[4], color=embed_color)
       cursor.execute(f"DELETE FROM events WHERE event_id={e[0]}")
       connection.commit()
       await channel.send(embed=embed)
