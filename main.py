@@ -218,7 +218,7 @@ async def _listevents(ctx:SlashContext):
 
 @slash.slash(
   name="addclass",
-  description="Adds a class to a existing course.",
+  description="Adds a class to an existing course.",
   guild_ids=guild_ids,
   options=[
     create_option(
