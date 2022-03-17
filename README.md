@@ -9,8 +9,9 @@ R.O.S.E. Assistant is a bot for the Guild of the ROSE Discord server.
 - `/createcourse` -> Creates a new course, and creates an event for each of its classes to happen on each of the class times.
 - `/deleteevent` -> Deletes an event.
 - `/deletecourse` -> Deletes a course along with all of its classes.
-- `/listevents` -> Lists all current events, courses, and classes.
+- `/listevents` -> Lists all current events, courses, classes, and class times.
 - `/addclass` -> Adds a class to an existing course.
+- `/deleteclasstime` -> Deletes a class time.
 
 ## Installing
 
@@ -23,4 +24,8 @@ pip3 install -r requirements.txt
 Run app:
 ```bash
 python3 main.py
+```
+## .env file template
+```
+BOT_TOKEN = YOUR_TOKEN_HERE
 ```
