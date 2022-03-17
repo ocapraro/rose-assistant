@@ -8,7 +8,7 @@ from discord.ext import commands, tasks
 from discord_slash import SlashCommand, SlashContext
 from discord_slash.utils.manage_commands import create_choice, create_option
 
-# Creates .env file if not present
+# create .env file
 if not os.path.exists(".env"):
   open(".env", 'w+')
 
@@ -213,11 +213,17 @@ async def _deletecourse(ctx:SlashContext, courseid:int):
 )
 async def _listevents(ctx:SlashContext):
   courses = [i for i in cursor.execute('SELECT * FROM courses')]
+  classTimes = [i for i in cursor.execute('SELECT * FROM class_times')]
   events = [i for i in cursor.execute('SELECT * FROM events WHERE parent_id = -1')]
   description = "\n".join([f"{e[1]} - ID: {e[0]}" for e in events])
   embed = discord.Embed(title="Events", description=description if description else "There are no current events.", color=embed_color)
+  classTimesDesc = "\n".join([f"{e[1]}: {e[2]} {e[3]} - ID: {e[0]}" for e in classTimes])
+  embed.add_field(name="Class Times:", value=classTimesDesc if classTimesDesc else "There are no current class times.", inline=False)
   for course in courses:
-    embed.add_field(name=f"{course[1]} - CourseID: {course[0]}", value="\n".join([f"{e[1]} - ID: {e[0]}" for e in cursor.execute(f'SELECT * FROM events WHERE parent_id = {course[0]}')]), inline=False)
+    description = "No classes."
+    if len([e for e in cursor.execute(f'SELECT * FROM events WHERE parent_id = {course[0]}')])>0:
+        description = "\n".join([f"{e[1]} - ID: {e[0]}\n Starts at: {e[3]}\n" for e in cursor.execute(f'SELECT * FROM events WHERE parent_id = {course[0]}')])
+    embed.add_field(name=f"{course[1]} - CourseID: {course[0]}", value=description, inline=False)
   await ctx.send(embed=embed)
 
 @slash.slash(
@@ -249,6 +255,25 @@ async def _addclass(ctx:SlashContext, courseid:int, name:str):
     date = f"{time[2]} {onDay(datetime.datetime.strptime(events[-1][3], '%I:%M%p %Y-%m-%d'), days.index(time[3]))}"
     create_event(f"{course[1]} {name} ({time[1]})", course[2], date, "The class starts in an hour. Join the general discord voice channel to access it.", parent_id=courseid)
     embed = discord.Embed(title="Success!", description="The class was successfully added.", color=embed_color)
+  await ctx.send(embed=embed)
+
+@slash.slash(
+  name="deleteclasstime",
+  description="Deletes a course.",
+  guild_ids=guild_ids,
+  options=[
+    create_option(
+      name="timeid",
+      description="The ID of the class time you wish to delete",
+      required=True,
+      option_type=4
+    ),
+  ]
+)
+async def _deleteclasstime(ctx:SlashContext, timeid:int):
+  cursor.execute(f"DELETE FROM class_times WHERE class_time_id={timeid}")
+  connection.commit()
+  embed = discord.Embed(title="Success!", description="The class time was successfully deleted.", color=embed_color)
   await ctx.send(embed=embed)
 
 
